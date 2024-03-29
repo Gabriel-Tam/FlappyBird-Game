@@ -1,0 +1,16 @@
+# Ignorar archivos compilados
+*.class
+
+# Ignorar archivos generados por IDEs
+*.iml
+*.ipr
+*.iws
+*.classpath
+*.project
+
+# Ignorar archivos de respaldo
+*~
+
+# Ignorar archivos de configuración del sistema
+.DS_Store
+/src/App.java
