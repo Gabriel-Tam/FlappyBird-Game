@@ -13,7 +13,8 @@
 
 # Ignorar archivos de configuración del sistema
 .DS_Store
-/src/App.java
+
+
 
 # Ignorar el archivo README.md
 README.md
