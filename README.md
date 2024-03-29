@@ -4,7 +4,7 @@ Este proyecto es una recreación del popular juego Flappy Bird desarrollado en J
 
 ## Descripción
 
-El objetivo de este proyecto es recrear el juego Flappy Bird utilizando Java y Threads, como parte de un trabajo universitario. La implementación del juego hará uso de Threads para manejar aspectos como la física del juego, la animación y la lógica de juego.
+El objetivo de este proyecto es recrear el juego Flappy Bird utilizando Java y Threads, como parte de un trabajo universitario. La implementación del juego hará uso de Threads para manejar algunos aspectos como pueden ser la física del juego, la animación y la lógica de juego.
 
 ## Características
 
