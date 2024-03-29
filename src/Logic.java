@@ -72,11 +72,10 @@ public class Logic extends JPanel implements ActionListener, KeyListener {
         addKeyListener(this);
 
         //load images
-        backgroundImg = new ImageIcon(getClass().getResource("src/res/bottompipe.png")).getImage();
-        birdImg = new ImageIcon(getClass().getResource("src/res/flappybird.png")).getImage();
-        topPipeImg = new ImageIcon(getClass().getResource("src/res/toppipe.png")).getImage();
-        bottomPipeImg = new ImageIcon(getClass().getResource("src/res/bottompipe.png")).getImage();
-
+        backgroundImg = new ImageIcon(getClass().getResource("res/flappybirdbg.png")).getImage();
+        birdImg = new ImageIcon(getClass().getResource("res/flappybird.png")).getImage();
+        topPipeImg = new ImageIcon(getClass().getResource("res/toppipe.png")).getImage();
+        bottomPipeImg = new ImageIcon(getClass().getResource("res/bottompipe.png")).getImage();
         //bird
         bird = new Bird(birdImg);
         pipes = new ArrayList<Pipe>();
