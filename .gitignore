@@ -14,6 +14,8 @@
 # Ignorar archivos de configuración del sistema
 .DS_Store
 
+# Ignorar la carpeta bin
+bin/
 
 
 # Ignorar el archivo README.md
