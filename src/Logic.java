@@ -1,23 +1,31 @@
+import javax.sound.sampled.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
 import javax.swing.*;
 
 public class Logic extends JPanel implements ActionListener, KeyListener {
-    
+
     int boardWidth = App.WIDTH;
     int boardHeight = App.HEIGHT;
 
-    //images
+    // images
     Image backgroundImg;
     Image birdImg;
     Image topPipeImg;
     Image bottomPipeImg;
 
-    //bird class
-    int birdX = boardWidth/8;
-    int birdY = boardWidth/2;
+    // Sounds
+    private Clip flySoundClip;
+    private Clip gameOverSoundClip;
+
+    // bird class
+    int birdX = boardWidth / 8;
+    int birdY = boardWidth / 2;
     int birdWidth = 34;
     int birdHeight = 24;
 
@@ -33,12 +41,12 @@ public class Logic extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    //pipe class
+    // pipe class
     int pipeX = boardWidth;
     int pipeY = 0;
-    int pipeWidth = 64;  //scaled by 1/6
+    int pipeWidth = 64; // scaled by 1/6
     int pipeHeight = 512;
-    
+
     class Pipe {
         int x = pipeX;
         int y = pipeY;
@@ -52,10 +60,10 @@ public class Logic extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    //game logic
+    // game logic
     Bird bird;
-    int velocityX = -4; //move pipes to the left speed (simulates bird moving right)
-    int velocityY = 0; //move bird up/down speed.
+    int velocityX = -4; // move pipes to the left speed (simulates bird moving right)
+    int velocityY = 0; // move bird up/down speed.
     int gravity = 1;
 
     ArrayList<Pipe> pipes;
@@ -68,134 +76,153 @@ public class Logic extends JPanel implements ActionListener, KeyListener {
 
     Logic() {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
-        // setBackground(Color.blue);
         setFocusable(true);
         addKeyListener(this);
 
-        //load images
+        // load images
         backgroundImg = new ImageIcon(getClass().getResource("/res/img/flappybirdbg.png")).getImage();
         birdImg = new ImageIcon(getClass().getResource("/res/img/flappybird.png")).getImage();
         topPipeImg = new ImageIcon(getClass().getResource("/res/img/toppipe.png")).getImage();
         bottomPipeImg = new ImageIcon(getClass().getResource("/res/img/bottompipe.png")).getImage();
 
-        //bird
+        // bird
         bird = new Bird(birdImg);
         pipes = new ArrayList<Pipe>();
 
-        //place pipes timer
+        // place pipes timer
         placePipeTimer = new Timer(1500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              // Code to be executed
-              placePipes();
+                // Code to be executed
+                placePipes();
             }
         });
         placePipeTimer.start();
-        
-		//game timer
-		gameLoop = new Timer(1000/60, this); //how long it takes to start timer, milliseconds gone between frames 
+
+        // game timer
+        gameLoop = new Timer(1000 / 60, this); // how long it takes to start timer, milliseconds gone between frames
         gameLoop.start();
-	}
-    
+
+        try {
+            // Cargar sonido para el vuelo
+            File flySoundFile = new File("src/res/sound/fly.wav"); // Ruta al archivo de sonido
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(flySoundFile);
+            flySoundClip = AudioSystem.getClip();
+            flySoundClip.open(audioInputStream);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            File gameOverSoundFile = new File("src/res/sound/death.wav");
+            AudioInputStream gameOverAudioInputStream = AudioSystem.getAudioInputStream(gameOverSoundFile);
+            gameOverSoundClip = AudioSystem.getClip();
+            gameOverSoundClip.open(gameOverAudioInputStream);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
     void placePipes() {
-        //(0-1) * pipeHeight/2.
+        // (0-1) * pipeHeight/2.
         // 0 -> -128 (pipeHeight/4)
         // 1 -> -128 - 256 (pipeHeight/4 - pipeHeight/2) = -3/4 pipeHeight
-        int randomPipeY = (int) (pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2));
-        int openingSpace = boardHeight/4;
-    
+        int randomPipeY = (int) (pipeY - pipeHeight / 4 - Math.random() * (pipeHeight / 2));
+        int openingSpace = boardHeight / 4;
+
         Pipe topPipe = new Pipe(topPipeImg);
         topPipe.y = randomPipeY;
         pipes.add(topPipe);
-    
+
         Pipe bottomPipe = new Pipe(bottomPipeImg);
-        bottomPipe.y = topPipe.y  + pipeHeight + openingSpace;
+        bottomPipe.y = topPipe.y + pipeHeight + openingSpace;
         pipes.add(bottomPipe);
     }
-    
-    
-    public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		draw(g);
-	}
 
-	public void draw(Graphics g) {
-        //background
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        draw(g);
+    }
+
+    public void draw(Graphics g) {
+        // background
         g.drawImage(backgroundImg, 0, 0, this.boardWidth, this.boardHeight, null);
 
-        //bird
+        // bird
         g.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height, null);
 
-        //pipes
+        // pipes
         for (int i = 0; i < pipes.size(); i++) {
             Pipe pipe = pipes.get(i);
             g.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height, null);
         }
 
-        //score
+        // score
         g.setColor(Color.white);
 
         g.setFont(new Font("Arial", Font.PLAIN, 32));
         if (gameOver) {
             g.drawString("Game Over: " + String.valueOf((int) score), 10, 35);
-        }
-        else {
+        } else {
             g.drawString(String.valueOf((int) score), 10, 35);
         }
-        
-	}
+
+    }
 
     public void move() {
-        //bird
+        // bird
         velocityY += gravity;
         bird.y += velocityY;
-        bird.y = Math.max(bird.y, 0); //apply gravity to current bird.y, limit the bird.y to top of the canvas
+        bird.y = Math.max(bird.y, 0); // apply gravity to current bird.y, limit the bird.y to top of the canvas
 
-        //pipes
+        // pipes
         for (int i = 0; i < pipes.size(); i++) {
             Pipe pipe = pipes.get(i);
             pipe.x += velocityX;
 
             if (!pipe.passed && bird.x > pipe.x + pipe.width) {
-                score += 0.5; //0.5 because there are 2 pipes! so 0.5*2 = 1, 1 for each set of pipes
+                score += 0.5; // 0.5 because there are 2 pipes! so 0.5*2 = 1, 1 for each set of pipes
                 pipe.passed = true;
             }
 
             if (collision(bird, pipe)) {
                 gameOver = true;
+                playGameOverSound(); // Llama al método para reproducir el sonido del Game Over
             }
         }
 
         if (bird.y > boardHeight) {
             gameOver = true;
+            playGameOverSound(); // Llama al método para reproducir el sonido del Game Over
         }
     }
 
     boolean collision(Bird a, Pipe b) {
-        return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-               a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-               a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-               a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+        return a.x < b.x + b.width && // a's top left corner doesn't reach b's top right corner
+                a.x + a.width > b.x && // a's top right corner passes b's top left corner
+                a.y < b.y + b.height && // a's top left corner doesn't reach b's bottom left corner
+                a.y + a.height > b.y; // a's bottom left corner passes b's top left corner
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) { //called every x milliseconds by gameLoop timer
+    public void actionPerformed(ActionEvent e) { // called every x milliseconds by gameLoop timer
         move();
         repaint();
         if (gameOver) {
             placePipeTimer.stop();
             gameLoop.stop();
         }
-    }  
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             // System.out.println("JUMP!");
             velocityY = -9;
+            playFlySound();// Reproducir sonido de vuelo
 
             if (gameOver) {
-                //restart game by resetting conditions
+                // restart game by resetting conditions
                 bird.y = birdY;
                 velocityY = 0;
                 pipes.clear();
@@ -207,10 +234,41 @@ public class Logic extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    //not needed
+    private void playFlySound() {
+        new Thread(() -> {
+            try {
+                if (flySoundClip.isRunning()) {
+                    flySoundClip.stop(); // Detener el clip si ya está en reproducción
+                }
+                flySoundClip.setFramePosition(0); // Reiniciar el clip al principio
+                flySoundClip.start(); // Reproducir el sonido
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void playGameOverSound() {
+        new Thread(() -> {
+            try {
+                if (gameOverSoundClip.isRunning()) {
+                    gameOverSoundClip.stop(); // Detener el clip si ya está en reproducción
+                }
+                gameOverSoundClip.setFramePosition(0); // Reiniciar el clip al principio
+                gameOverSoundClip.start(); // Reproducir el sonido
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }).start();
+    }
+    
+
+    // not needed
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+    }
 }
