@@ -1,13 +1,14 @@
 import javax.swing.*;
 
 public class App {
+    public static final int WIDTH = 360;
+    public static final int HEIGHT = 640;
     public static void main(String[] args) throws Exception {
-        int boardWidth = 360;
-        int boardHeight = 640;
+
 
         JFrame frame = new JFrame("Flappy Bird");
         // frame.setVisible(true);
-		frame.setSize(boardWidth, boardHeight);
+		frame.setSize(WIDTH, HEIGHT);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

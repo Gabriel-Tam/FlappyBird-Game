@@ -5,8 +5,9 @@ import java.util.Random;
 import javax.swing.*;
 
 public class Logic extends JPanel implements ActionListener, KeyListener {
-    int boardWidth = 360;
-    int boardHeight = 640;
+    
+    int boardWidth = App.WIDTH;
+    int boardHeight = App.HEIGHT;
 
     //images
     Image backgroundImg;
