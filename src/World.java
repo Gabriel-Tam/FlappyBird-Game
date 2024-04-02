@@ -73,7 +73,7 @@ public class World extends JPanel {
                 bird.flappy();
             }
         });
-
+    
         while (true) {
             if (start) {
                 column1.step();
@@ -91,11 +91,14 @@ public class World extends JPanel {
                     pointSound.start();
                 }
             }
-            ground.step();
+            if (!gameover) { // Solo mover el suelo si el juego no ha terminado
+                ground.step();
+            }
             repaint();
             Thread.sleep(1000 / 60);
         }
     }
+    
 
     /**
      * Método para dibujar los elementos del juego en la pantalla.
