@@ -6,7 +6,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -24,8 +23,8 @@ public class World extends JPanel {
     private Bird bird;
     private boolean gameover;
     private BufferedImage end;
+    private BufferedImage[] numbers; // Array para almacenar las imágenes de los números
     private int score;
-    private Font scoreFont; // Nueva fuente para la puntuación
 
     /**
      * Constructor que inicializa el mundo del juego.
@@ -35,13 +34,10 @@ public class World extends JPanel {
         startImg = ImageIO.read(getClass().getResource("/res/img/start.png"));
         init();
 
-        // Cargar la nueva fuente
-        try {
-            InputStream fontStream = getClass().getResourceAsStream("/res/font/numers-font/flappy-bird-font.ttf");
-            scoreFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(Font.BOLD, 30);
-        } catch (Exception e) {
-            e.printStackTrace();
-            scoreFont = new Font("Arial", Font.BOLD, 30); // En caso de error, usa una fuente predeterminada
+        // Cargar las imágenes de los números
+        numbers = new BufferedImage[10];
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = ImageIO.read(getClass().getResource("/res/img/numbers/" + i + ".png"));
         }
     }
 
@@ -103,45 +99,49 @@ public class World extends JPanel {
 
     /**
      * Método para dibujar los elementos del juego en la pantalla.
-     */
-    @Override
-    public void paint(Graphics g) {
-        g.drawImage(background, 0, 0, null);
-        ground.paint(g);
-        column1.paint(g);
-        column2.paint(g);
-        bird.paint(g);
-    
-        // Aplicar la nueva fuente para la puntuación
-        g.setFont(scoreFont);
-        
-        // Obtener métricas de la fuente para calcular el ancho del texto
-        FontMetrics metrics = g.getFontMetrics(scoreFont);
-        int scoreWidth = metrics.stringWidth(Integer.toString(score));
-        
-        // Calcular las coordenadas para centrar el número en la parte superior de la pantalla
-        int x = (getWidth() - scoreWidth) / 2;
-        int y = 60; // Altura ajustada para que el número esté en la parte superior
-    
-        // Dibujar el texto con el efecto de borde resaltado
-        g.setColor(Color.black); // Fondo blanco
-        g.drawString(Integer.toString(score), x, y);
-        
-        if (gameover) {
-            try {
-                end = ImageIO.read(getClass().getResource("/res/img/gameover.png"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            g.drawImage(end, 0, 0, null);
-            return;
-        }
-        if (!start) {
-            g.drawImage(startImg, 0, 0, null);
+     */@Override
+public void paint(Graphics g) {
+    g.drawImage(background, 0, 0, null);
+    ground.paint(g);
+    column1.paint(g);
+    column2.paint(g);
+    bird.paint(g);
+
+    // Dibujar el score con imágenes de los números
+    int scoreDigits = score == 0 ? 1 : (int)Math.log10(score) + 1; // Número de dígitos del score, asegurándonos de que sea al menos 1
+    int digitWidth = numbers[0].getWidth(); // Ancho de un dígito
+
+    // Calcular la posición x inicial para centrar los números del score
+    int totalWidth = scoreDigits * digitWidth;
+    int x = (getWidth() - totalWidth) / 2;
+
+    // Si el score es cero, dibujar el número 0
+    if (score == 0) {
+        g.drawImage(numbers[0], x, 50, null);
+    } else {
+        // Dibujar los dígitos del score de derecha a izquierda
+        int tempScore = score;
+        while (tempScore > 0) {
+            int digit = tempScore % 10; // Obtener el último dígito
+            g.drawImage(numbers[digit], x + totalWidth - digitWidth, 50, null);
+            tempScore /= 10; // Eliminar el último dígito
+            totalWidth -= digitWidth; // Mover a la izquierda para el siguiente dígito
         }
     }
-    
-    
+
+    if (gameover) {
+        try {
+            end = ImageIO.read(getClass().getResource("/res/img/gameover.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        g.drawImage(end, 0, 0, null);
+        return;
+    }
+    if (!start) {
+        g.drawImage(startImg, 0, 0, null);
+    }
+}
 
     public static void main(String[] args) throws IOException, InterruptedException {
         JFrame frame = new JFrame("FlappyBird");
