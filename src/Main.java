@@ -17,7 +17,7 @@ import javax.swing.JPanel;
  * Clase que representa el mundo del juego Flappy Bird, inicializa los elementos
  * del juego y gestiona su funcionamiento.
  */
-public class World extends JPanel {
+public class Main extends JPanel {
     private BufferedImage startImg;
     private Ground ground;
     private Column column1;
@@ -35,7 +35,7 @@ public class World extends JPanel {
     /**
      * Constructor que inicializa el mundo del juego.
      */
-    public World() throws IOException {
+    public Main() throws IOException {
         startImg = ImageIO.read(getClass().getResource("/res/img/start.png"));
         backgroundDay = ImageIO.read(this.getClass().getResource("/res/img/bg-day.png"));
         backgroundNight = ImageIO.read(this.getClass().getResource("/res/img/bg-night.png"));
@@ -174,7 +174,7 @@ public class World extends JPanel {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         JFrame frame = new JFrame("FlappyBird");
-        World world = new World();
+        Main world = new Main();
         frame.add(world);
         frame.setSize(288, 512);
         frame.setResizable(false);
