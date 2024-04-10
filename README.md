@@ -29,6 +29,4 @@ El objetivo de este proyecto es recrear el juego Flappy Bird utilizando Java y T
 
 Si deseas contribuir al proyecto, ¡no dudes en enviar un pull request!
 
-## Licencia
 
-Este proyecto está bajo la Licencia [Especificar la licencia que estés utilizando].
