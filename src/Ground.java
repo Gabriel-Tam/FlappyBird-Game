@@ -26,22 +26,19 @@ public class Ground {
         //height = ground.getHeight(); // Altura: 80
     }
     
-    // Método getter para la posición horizontal
     public int getX() {
         return x;
     }
 
-    // Método setter para la posición horizontal
     public void setX(int x) {
         this.x = x;
     }
 
-    // Método getter para la posición vertical
+
     public int getY() {
         return y;
     }
 
-    // Método setter para la posición vertical
     public void setY(int y) {
         this.y = y;
     }
@@ -59,7 +56,6 @@ public class Ground {
     
     // Método para dibujar el suelo
     public void paint(Graphics g) {
-        // Dibuja la imagen del suelo en la posición actual
         g.drawImage(ground, x, y, null); // Posición: (0,400)
     }
     
