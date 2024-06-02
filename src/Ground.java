@@ -58,10 +58,4 @@ public class Ground {
     public void paint(Graphics g) {
         g.drawImage(ground, x, y, null); // Posición: (0,400)
     }
-    
-    // Método principal para probar la clase Ground
-    public static void main(String[] args) throws IOException {
-        // Crea un nuevo objeto Ground con una posición vertical de 400
-        new Ground(400);
-    }
 }
